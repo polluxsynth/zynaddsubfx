@@ -46,6 +46,12 @@ SynthNote::Legato::Legato(const SYNTH_T &synth_, float vel, int port,
 
 int SynthNote::Legato::update(const LegatoParams &pars)
 {
+    lastfreq_log2 = param.note_log2_freq;
+    param.vel  = pars.velocity;
+    param.portamento = pars.portamento;
+    param.note_log2_freq = pars.note_log2_freq;
+    msg = LM_ToNorm;
+#if 0
     if(pars.externcall)
         msg = LM_Norm;
     if(msg != LM_CatchUp) {
@@ -67,6 +73,7 @@ int SynthNote::Legato::update(const LegatoParams &pars)
         if(msg == LM_ToNorm)
             msg = LM_Norm;
     }
+#endif
     return 0;
 }
 
@@ -78,6 +85,13 @@ void SynthNote::Legato::apply(SynthNote &note, float *outl, float *outr)
             memset(outr, 0, synth.bufferbytes);
         }
     try {
+        if (msg == LM_ToNorm) {
+            LegatoParams pars{param.vel, param.portamento,
+                              param.note_log2_freq, false, param.seed};
+            note.legatonote(pars);
+            msg = LM_Norm;
+        }
+#if 0
         switch (msg) {
             case LM_CatchUp: // Continue the catch-up...
                 if (decounter == -10)
@@ -145,6 +159,7 @@ void SynthNote::Legato::apply(SynthNote &note, float *outl, float *outr)
             default:
                 break;
         }
+#endif
     } catch (std::bad_alloc &ba) {
         std::cerr << "failed to apply legato: " << ba.what() << std::endl;
     }

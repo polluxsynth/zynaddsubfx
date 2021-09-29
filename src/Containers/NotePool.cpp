@@ -205,6 +205,7 @@ void NotePool::insertNote(note_t note, uint8_t sendto, SynthDescriptor desc, boo
     ndesc[desc_id].note         = note;
     ndesc[desc_id].sendto       = sendto;
     ndesc[desc_id].size        += 1;
+printf("%s: Descriptor %d: note %d, size %d\n", __func__, desc_id, note, ndesc[desc_id].size);
     ndesc[desc_id].status       = KEY_PLAYING;
     ndesc[desc_id].legatoMirror = legato;
 
@@ -240,9 +241,11 @@ void NotePool::insertLegatoNote(note_t note, uint8_t sendto, SynthDescriptor des
 void NotePool::applyLegato(note_t note, const LegatoParams &par)
 {
     for(auto &desc:activeDesc()) {
+printf("%s: note descr was note %d, legato %d; set to %d\n", __func__, desc.note, desc.legatoMirror, note);
         desc.note = note;
         for(auto &synth:activeNotes(desc))
             try {
+printf("%s: setting legatonote\n", __func__);
                 synth.note->legatonote(par);
             } catch (std::bad_alloc& ba) {
                 std::cerr << "failed to create legato note: " << ba.what() << std::endl;

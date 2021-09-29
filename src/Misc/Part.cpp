@@ -563,6 +563,9 @@ bool Part::NoteOnInternal(note_t note,
     if(doingLegato) {
         LegatoParams pars = {vel, portamento, note_log2_freq, true, prng()};
         notePool.applyLegato(note, pars);
+	printf("Doing legato:\n");
+	notePool.dump();
+	printf("Returning\n");
         return true;
     }
 
@@ -608,8 +611,13 @@ bool Part::NoteOnInternal(note_t note,
             break;
     }
 
+#if 0
     if(isLegatoMode())
         notePool.upgradeToLegato();
+#endif
+
+    printf("After note on, upgrade to legato:\n");
+    notePool.dump();
 
     //Enforce the key limit
     setkeylimit(Pkeylimit);
