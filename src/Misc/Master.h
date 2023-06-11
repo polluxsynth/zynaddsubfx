@@ -41,7 +41,6 @@ struct vuData {
     int clipped;
 };
 
-
 /** It sends Midi Messages to Parts, receives samples from parts,
  *  process them with system/insertion effects and mix them */
 class Master

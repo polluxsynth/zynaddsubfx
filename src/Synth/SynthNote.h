@@ -21,6 +21,19 @@ namespace zyn {
 class Allocator;
 class Controller;
 class Portamento;
+
+class Pan
+{
+  public:
+    Pan(const float left_gain, const float right_gain)
+    {
+      lgain = left_gain;
+      rgain = right_gain;
+    }
+
+    float lgain, rgain;
+};
+
 struct SynthParams
 {
     Allocator &memory;   //Memory Allocator for the Note to use
