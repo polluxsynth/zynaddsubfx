@@ -1834,27 +1834,32 @@ int ADnote::noteout(float *outl, float *outr)
 
         // Add the voice that do not bypass the filter to out
         if(NoteVoicePar[nvoice].filterbypass == 0) { //no bypass
-            if(stereo)
+            if(stereo) {
+                Pan panning(NoteVoicePar[nvoice].Volume *
+                            (1.0f - NoteVoicePar[nvoice].Panning) * 2.0f,
+                            NoteVoicePar[nvoice].Volume *
+                            NoteVoicePar[nvoice].Panning * 2.0f);
+
                 for(int i = 0; i < synth.buffersize; ++i) { //stereo
-                    outl[i] += tmpwavel[i] * NoteVoicePar[nvoice].Volume
-                               * (1.0f - NoteVoicePar[nvoice].Panning) * 2.0f;
-                    outr[i] += tmpwaver[i] * NoteVoicePar[nvoice].Volume
-                               * NoteVoicePar[nvoice].Panning * 2.0f;
+                    outl[i] += tmpwavel[i] * panning.lgain;
+                    outr[i] += tmpwaver[i] * panning.rgain;
                 }
-            else
+            } else
                 for(int i = 0; i < synth.buffersize; ++i) //mono
                     outl[i] += tmpwavel[i] * NoteVoicePar[nvoice].Volume;
         }
         else {  //bypass the filter
-            if(stereo)
+            if(stereo) {
+                Pan panning(NoteVoicePar[nvoice].Volume *
+                            (1.0f - NoteVoicePar[nvoice].Panning * 2.0f),
+                            NoteVoicePar[nvoice].Volume *
+                            NoteVoicePar[nvoice].Panning * 2.0f);
+
                 for(int i = 0; i < synth.buffersize; ++i) { //stereo
-                    bypassl[i] += tmpwavel[i] * NoteVoicePar[nvoice].Volume
-                                  * (1.0f
-                                     - NoteVoicePar[nvoice].Panning) * 2.0f;
-                    bypassr[i] += tmpwaver[i] * NoteVoicePar[nvoice].Volume
-                                  * NoteVoicePar[nvoice].Panning * 2.0f;
+                    bypassl[i] += tmpwavel[i] * panning.lgain;
+                    bypassr[i] += tmpwaver[i] * panning.rgain;
                 }
-            else
+            } else
                 for(int i = 0; i < synth.buffersize; ++i) //mono
                     bypassl[i] += tmpwavel[i] * NoteVoicePar[nvoice].Volume;
         }
